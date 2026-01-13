@@ -1,19 +1,22 @@
 package personal.keisuke.yamanaka.getstarted
 
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import java.net.URI
 
 @RestController
-class MessageController {
+@RequestMapping("/")
+class MessageController(private val service: MessageService) {
     @GetMapping
-    fun listMessages() = listOf(
-        Message("1", "Hello!"),
-        Message("2", "Bonjour!"),
-        Message("3", "Privet!"),
-    )
+    fun listMessages() = service.findMessages()
 
-//    @GetMapping("/")
-//    fun index(@RequestParam("name") name: String) = "Hello, $name!"
-
+    @PostMapping
+    fun post(@RequestBody message: Message): ResponseEntity<Message> {
+        val savedMessage = service.save(message)
+        return ResponseEntity.created(URI("/${savedMessage.id}")).body(savedMessage)
+    }
 }
