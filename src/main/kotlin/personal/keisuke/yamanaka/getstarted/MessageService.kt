@@ -11,6 +11,10 @@ class MessageService(private val db: JdbcTemplate) {
         Message(response.getString("id"), response.getString("text"))
     }
 
+    fun findMessageById(id: String): Message? = db.query("select * from messages where id = ?", id) { response, _ ->
+        Message(response.getString("id"), response.getString("text"))
+    }.singleOrNull()
+
     fun save(message: Message): Message {
         val id = message.id ?: UUID.randomUUID().toString() // Generate new id if it is null
         db.update(
